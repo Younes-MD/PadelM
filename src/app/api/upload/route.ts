@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { uploadImage } from "@/lib/cloudinary";
 import { rateLimit, getClientIp } from "@/lib/rate-limit";
 import { apiSuccess, apiError, apiRateLimited } from "@/lib/api-helpers";
+export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
   try {
