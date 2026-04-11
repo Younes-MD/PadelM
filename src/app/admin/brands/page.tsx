@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState, useCallback } from "react";
 
-interface Brand { id: string; name: string; active: boolean; createdAt: string; }
+interface Brand { id: string; name: string; active: boolean; }
 
 export default function AdminBrandsPage() {
   const [brands, setBrands] = useState<Brand[]>([]);
@@ -28,8 +28,8 @@ export default function AdminBrandsPage() {
       body: JSON.stringify({ name: newBrand.trim() }),
     });
     const data = await res.json();
-    if (!res.ok) { setError(data.error || "Erreur"); }
-    else { setNewBrand(""); }
+    if (!res.ok) setError(data.error || "Erreur");
+    else setNewBrand("");
     setAdding(false);
     fetchBrands();
   }
@@ -44,23 +44,27 @@ export default function AdminBrandsPage() {
   }
 
   async function handleDelete(id: string, name: string) {
-    if (!confirm(`Supprimer la marque "${name}"?`)) return;
+    if (!confirm(`Supprimer "${name}"?`)) return;
     await fetch(`/api/admin/brands?id=${id}`, { method: "DELETE" });
     fetchBrands();
   }
 
-  if (loading) return <div className="flex items-center justify-center h-64 text-surface-400">Chargement...</div>;
+  if (loading) return (
+    <div className="flex items-center justify-center h-64" style={{ color: "rgba(255,255,255,0.3)" }}>
+      Chargement...
+    </div>
+  );
 
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-surface-900">Marques</h1>
-        <p className="text-surface-500 text-sm">Gérez les marques disponibles sur le site</p>
+        <h1 className="admin-title">Marques</h1>
+        <p className="admin-subtitle">Gérez les marques disponibles sur le site</p>
       </div>
 
       {/* Add brand */}
-      <div className="bg-white rounded-xl border border-surface-100 p-5 mb-6">
-        <h2 className="font-semibold text-surface-900 mb-3">Ajouter une marque</h2>
+      <div className="rounded-2xl border border-white/8 p-5 mb-5" style={{ background: "rgba(255,255,255,0.04)" }}>
+        <h2 className="text-sm font-semibold text-white mb-3">Ajouter une marque</h2>
         <div className="flex gap-3">
           <input
             className="input-field flex-1"
@@ -73,44 +77,55 @@ export default function AdminBrandsPage() {
             {adding ? "..." : "+ Ajouter"}
           </button>
         </div>
-        {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+        {error && (
+          <p className="text-sm mt-2" style={{ color: "#fca5a5" }}>{error}</p>
+        )}
       </div>
 
       {/* Brands list */}
-      <div className="bg-white rounded-xl border border-surface-100 overflow-hidden">
-        <div className="px-5 py-3 border-b border-surface-100 flex items-center justify-between">
-          <h2 className="font-semibold text-surface-900">Toutes les marques ({brands.length})</h2>
+      <div className="rounded-2xl border border-white/8 overflow-hidden" style={{ background: "rgba(255,255,255,0.04)" }}>
+        <div className="px-5 py-3 border-b border-white/8">
+          <h2 className="text-sm font-semibold text-white">
+            Toutes les marques ({brands.length})
+          </h2>
         </div>
-        <div className="divide-y divide-surface-100">
-          {brands.map((brand) => (
-            <div key={brand.id} className="px-5 py-3 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <span className={`w-2 h-2 rounded-full ${brand.active ? "bg-emerald-500" : "bg-surface-300"}`} />
-                <span className={`font-medium ${brand.active ? "text-surface-900" : "text-surface-400 line-through"}`}>
-                  {brand.name}
-                </span>
-                <span className={`badge text-xs ${brand.active ? "bg-emerald-100 text-emerald-700" : "bg-surface-100 text-surface-500"}`}>
-                  {brand.active ? "Actif" : "Désactivé"}
-                </span>
+
+        {brands.length === 0 ? (
+          <div className="px-5 py-12 text-center text-sm" style={{ color: "rgba(255,255,255,0.20)" }}>
+            Aucune marque. Ajoutez-en une ci-dessus.
+          </div>
+        ) : (
+          <div>
+            {brands.map((brand) => (
+              <div key={brand.id}
+                className="px-5 py-3 flex items-center justify-between border-b border-white/5 last:border-0">
+                <div className="flex items-center gap-3">
+                  <span className={`w-2 h-2 rounded-full ${brand.active ? "bg-emerald-400" : "bg-white/20"}`} />
+                  <span className={`font-medium text-sm ${brand.active ? "text-white" : "text-white/30 line-through"}`}>
+                    {brand.name}
+                  </span>
+                  <span className="badge" style={brand.active
+                    ? { background: "rgba(16,185,129,0.12)", color: "#6ee7b7", border: "1px solid rgba(16,185,129,0.25)" }
+                    : { background: "rgba(255,255,255,0.05)", color: "rgba(255,255,255,0.30)", border: "1px solid rgba(255,255,255,0.10)" }
+                  }>
+                    {brand.active ? "Actif" : "Désactivé"}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button onClick={() => handleToggle(brand.id, brand.active)}
+                    className="px-3 py-1 text-xs rounded-lg border border-white/10 transition-all hover:border-white/25"
+                    style={{ color: "rgba(255,255,255,0.50)", background: "rgba(255,255,255,0.04)" }}>
+                    {brand.active ? "Désactiver" : "Activer"}
+                  </button>
+                  <button onClick={() => handleDelete(brand.id, brand.name)}
+                    className="p-1.5 rounded-lg transition-all hover:bg-red-500/10 text-white/20 hover:text-red-400">
+                    🗑
+                  </button>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <button onClick={() => handleToggle(brand.id, brand.active)}
-                  className="px-3 py-1 text-xs rounded-lg border border-surface-200 text-surface-600 hover:bg-surface-50 transition-colors">
-                  {brand.active ? "Désactiver" : "Activer"}
-                </button>
-                <button onClick={() => handleDelete(brand.id, brand.name)}
-                  className="p-1.5 rounded-lg hover:bg-red-50 text-surface-400 hover:text-red-500 transition-colors">
-                  🗑
-                </button>
-              </div>
-            </div>
-          ))}
-          {brands.length === 0 && (
-            <div className="px-5 py-10 text-center text-surface-400 text-sm">
-              Aucune marque. Ajoutez-en une ci-dessus.
-            </div>
-          )}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
