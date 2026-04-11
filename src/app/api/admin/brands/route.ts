@@ -2,7 +2,7 @@ import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { apiSuccess, apiError } from "@/lib/api-helpers";
 
-export const dynamic = "force-dynamic";
+export const dynamic = "force-dynamic"; 
 
 export async function GET() {
   try {
