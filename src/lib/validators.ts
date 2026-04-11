@@ -12,6 +12,7 @@ export const racketSchema = z.object({
   shape: z.enum(["round", "diamond", "teardrop"]).optional(),
   featured: z.boolean().default(false),
   sold: z.boolean().default(false),
+  certified: z.boolean().default(false)
 });
 
 export const submissionSchema = z.object({
