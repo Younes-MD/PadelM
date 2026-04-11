@@ -1,12 +1,10 @@
-// Simple in-memory rate limiter (for production, consider Upstash Redis)
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
 
-// Clean up expired entries every 5 minutes
 setInterval(() => {
   const now = Date.now();
-  for (const [key, value] of rateLimitMap.entries()) {
+  rateLimitMap.forEach((value, key) => {
     if (now > value.resetTime) rateLimitMap.delete(key);
-  }
+  });
 }, 5 * 60 * 1000);
 
 interface RateLimitConfig {
