@@ -1,0 +1,97 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Racket {
+  id          String   @id @default(cuid())
+  title       String
+  brand       String
+  model       String
+  condition   String
+  price       Float
+  description String
+  images      String[]
+  weight      String?
+  shape       String?
+  featured    Boolean  @default(false)
+  sold        Boolean  @default(false)
+  certified   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([brand])
+  @@index([condition])
+  @@index([price])
+  @@index([featured])
+  @@index([certified])
+}
+
+model Brand {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+model Submission {
+  id          String   @id @default(cuid())
+  name        String
+  email       String
+  phone       String?
+  brand       String
+  model       String
+  condition   String
+  askingPrice Float?
+  description String
+  images      String[]
+  status      String   @default("pending")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([status])
+}
+
+model ContactRequest {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  racketId  String?
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([read])
+}
+
+model AdminUser {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  password  String
+  createdAt DateTime @default(now())
+}
+
+model SiteVisit {
+  id        String   @id @default(cuid())
+  page      String
+  userAgent String?
+  ip        String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([page])
+}
+
+model Announcement {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

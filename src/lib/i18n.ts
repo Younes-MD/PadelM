@@ -1,0 +1,78 @@
+export type Lang = "fr" | "en";
+
+export const translations = {
+  fr: {
+    nav: { home: "Accueil", browse: "Parcourir", sell: "Vendre", contact: "Contact" },
+    hero: {
+      trusted: "Approuvé par les joueurs de padel",
+      findYour: "Trouvez Votre",
+      perfectRacket: "Raquette Parfaite",
+      subtitle: "Raquettes de padel d'occasion de qualité à des prix honnêtes. Chaque annonce vérifiée, chaque condition décrite avec transparence.",
+      browse: "Parcourir les Raquettes",
+      sell: "Vendre la Vôtre",
+    },
+    trust: [
+      { icon: "✓", label: "Annonces Vérifiées", sub: "Chaque raquette vérifiée" },
+      { icon: "★", label: "Label Certifié", sub: "Vérifié par notre équipe" },
+      { icon: "♻", label: "Durable", sub: "Nouvelle vie aux raquettes" },
+      { icon: "💬", label: "Contact Direct", sub: "Parlez avant d'acheter" },
+    ],
+    featured: { label: "En Vedette", title: "Meilleures Sélections", viewAll: "Voir tout", empty: "Aucune raquette en vedette pour le moment.", viewAllMobile: "Voir toutes les raquettes" },
+    sellCta: { title: "Vous avez une raquette à vendre?", sub: "Soumettez votre raquette en quelques minutes. Nous la révisons et la listons gratuitement.", cta: "Soumettre votre raquette" },
+    certified: "Certifié",
+    certifiedBy: "Certifié par notre équipe",
+    sold: "Vendu",
+    brands: "Nos Marques",
+    conditions: { new: "Neuf", like_new: "Comme Neuf", good: "Bon État", fair: "Correct" },
+    browse: {
+      title: "Parcourir les Raquettes",
+      search: "Rechercher...",
+      allBrands: "Toutes les marques",
+      allConditions: "Tous les états",
+      newest: "Plus récent",
+      priceLow: "Prix croissant",
+      priceHigh: "Prix décroissant",
+      filter: "Filtrer",
+      noResults: "Aucune raquette trouvée",
+      adjustFilters: "Essayez de modifier vos filtres ou votre recherche.",
+    },
+  },
+  en: {
+    nav: { home: "Home", browse: "Browse", sell: "Sell", contact: "Contact" },
+    hero: {
+      trusted: "Trusted by padel players",
+      findYour: "Find Your",
+      perfectRacket: "Perfect Racket",
+      subtitle: "Quality pre-owned padel rackets at honest prices. Every listing verified, every condition described transparently.",
+      browse: "Browse Rackets",
+      sell: "Sell Yours",
+    },
+    trust: [
+      { icon: "✓", label: "Verified Listings", sub: "Every racket checked" },
+      { icon: "★", label: "Certified Label", sub: "Checked by our team" },
+      { icon: "♻", label: "Sustainable", sub: "Give rackets new life" },
+      { icon: "💬", label: "Direct Contact", sub: "Talk before you buy" },
+    ],
+    featured: { label: "Featured", title: "Top Picks", viewAll: "View all", empty: "No featured rackets yet — check back soon!", viewAllMobile: "View All Rackets" },
+    sellCta: { title: "Have a Racket to Sell?", sub: "Submit your racket in minutes. We'll review it and list it for free.", cta: "Submit Your Racket" },
+    certified: "Certified",
+    certifiedBy: "Certified by our team",
+    sold: "Sold",
+    brands: "Our Brands",
+    conditions: { new: "New", like_new: "Like New", good: "Good", fair: "Fair" },
+    browse: {
+      title: "Browse Rackets",
+      search: "Search rackets...",
+      allBrands: "All Brands",
+      allConditions: "All Conditions",
+      newest: "Newest First",
+      priceLow: "Price: Low → High",
+      priceHigh: "Price: High → Low",
+      filter: "Filter",
+      noResults: "No rackets found",
+      adjustFilters: "Try adjusting your filters or search terms.",
+    },
+  },
+};
+
+export type Translations = typeof translations.fr;

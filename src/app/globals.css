@@ -1,0 +1,302 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Serif+Display&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply font-body text-white;
+    background-color: #050a14;
+    background-image:
+      linear-gradient(to bottom,
+        rgba(5, 10, 20, 0.82) 0%,
+        rgba(5, 10, 20, 0.70) 40%,
+        rgba(5, 10, 20, 0.88) 100%),
+      url("/background_Picture.jpg");
+    background-size: cover;
+    background-position: center top;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+  }
+
+  /* Admin pages — override body background */
+  body:has([data-admin]) {
+    background-image: none !important;
+    background-color: #0f1117 !important;
+    background-attachment: scroll !important;
+  }
+
+  ::selection {
+    @apply bg-gold-500/20 text-gold-300;
+  }
+}
+
+@layer components {
+
+  /* ────────────────────────────────
+     BUTTONS
+  ──────────────────────────────── */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3
+           bg-gold-500 text-[#050a14] font-semibold rounded-xl
+           hover:bg-gold-400 active:bg-gold-600
+           transition-all duration-200
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050a14]
+           disabled:opacity-40 disabled:cursor-not-allowed
+           shadow-lg shadow-gold-500/20;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3
+           text-white font-medium rounded-xl border border-white/15
+           hover:border-white/25 active:bg-white/10
+           transition-all duration-200 backdrop-blur-sm
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20
+           disabled:opacity-40 disabled:cursor-not-allowed;
+    background: rgba(255,255,255,0.06);
+  }
+
+  .btn-secondary:hover {
+    background: rgba(255,255,255,0.10);
+  }
+
+  /* Admin specific button override */
+  .btn-admin-secondary {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2
+           text-white/60 font-medium rounded-xl border border-white/10
+           hover:text-white hover:border-white/20
+           transition-all duration-200 text-sm;
+    background: rgba(255,255,255,0.04);
+  }
+
+  /* ────────────────────────────────
+     INPUTS
+  ──────────────────────────────── */
+  .input-field {
+    @apply w-full px-4 py-3 rounded-xl border text-white
+           placeholder:text-white/25
+           focus:outline-none focus:ring-2 focus:ring-gold-500/30 focus:border-gold-500/40
+           transition-all duration-200;
+    background: rgba(255,255,255,0.05);
+    border-color: rgba(255,255,255,0.10);
+  }
+
+  .input-field:focus {
+    background: rgba(255,255,255,0.07);
+  }
+
+  /* Select elements */
+  select.input-field option {
+    background: #1a1d27;
+    color: #e8e8e8;
+  }
+
+  /* ────────────────────────────────
+     CARDS
+  ──────────────────────────────── */
+  .card {
+    @apply rounded-2xl border border-white/8 overflow-hidden
+           hover:border-gold-500/25 transition-all duration-300;
+    background: rgba(5, 10, 20, 0.50);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+
+  .card-glass {
+    @apply rounded-xl border border-white/8;
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+
+  /* Admin card */
+  .card-admin {
+    @apply rounded-2xl border border-white/8 overflow-hidden;
+    background: rgba(255,255,255,0.04);
+  }
+
+  /* ────────────────────────────────
+     TYPOGRAPHY
+  ──────────────────────────────── */
+  .section-title {
+    @apply font-display text-3xl md:text-4xl text-white;
+  }
+
+  .admin-title {
+    @apply text-2xl font-bold;
+    color: #e8e8e8;
+  }
+
+  .admin-subtitle {
+    @apply text-sm mt-0.5;
+    color: rgba(255,255,255,0.35);
+  }
+
+  /* ────────────────────────────────
+     BADGES
+  ──────────────────────────────── */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-condition-new {
+    background: rgba(16, 185, 129, 0.12);
+    color: #6ee7b7;
+    border: 1px solid rgba(16, 185, 129, 0.25);
+  }
+
+  .badge-condition-like_new {
+    background: rgba(14, 165, 233, 0.12);
+    color: #7dd3fc;
+    border: 1px solid rgba(14, 165, 233, 0.25);
+  }
+
+  .badge-condition-good {
+    background: rgba(245, 158, 11, 0.12);
+    color: #fcd34d;
+    border: 1px solid rgba(245, 158, 11, 0.25);
+  }
+
+  .badge-condition-fair {
+    background: rgba(255,255,255,0.06);
+    color: rgba(255,255,255,0.50);
+    border: 1px solid rgba(255,255,255,0.12);
+  }
+
+  .badge-certified {
+    background: rgba(249, 204, 74, 0.12);
+    color: #fcd34d;
+    border: 1px solid rgba(249, 204, 74, 0.30);
+  }
+
+  /* ────────────────────────────────
+     DECORATIVE
+  ──────────────────────────────── */
+  .accent-line {
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(249,204,74,0.35), transparent);
+  }
+
+  .divider {
+    height: 1px;
+    background: rgba(255,255,255,0.06);
+  }
+
+  /* ────────────────────────────────
+     ADMIN TABLE
+  ──────────────────────────────── */
+  .admin-table {
+    @apply w-full text-sm;
+    color: #e8e8e8;
+  }
+
+  .admin-table thead tr {
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .admin-table thead th {
+    @apply px-4 py-3 text-left font-medium;
+    color: rgba(255,255,255,0.35);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .admin-table tbody tr {
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    transition: background 0.15s;
+  }
+
+  .admin-table tbody tr:hover {
+    background: rgba(255,255,255,0.03);
+  }
+
+  .admin-table tbody td {
+    @apply px-4 py-3;
+    color: rgba(255,255,255,0.75);
+  }
+
+  /* ────────────────────────────────
+     ADMIN STAT CARD
+  ──────────────────────────────── */
+  .stat-card {
+    @apply rounded-2xl p-5 border border-white/8;
+    background: rgba(255,255,255,0.04);
+  }
+
+  .stat-card-accent {
+    @apply rounded-2xl p-5;
+    background: linear-gradient(135deg, rgba(249,204,74,0.15), rgba(249,204,74,0.05));
+    border: 1px solid rgba(249,204,74,0.20);
+  }
+
+  .stat-label {
+    @apply text-xs uppercase tracking-wider;
+    color: rgba(255,255,255,0.35);
+  }
+
+  .stat-value {
+    @apply text-3xl font-bold mt-1 text-white;
+  }
+
+  .stat-sub {
+    @apply text-xs mt-1;
+    color: rgba(255,255,255,0.25);
+  }
+}
+
+/* ────────────────────────────────
+   SCROLLBAR
+──────────────────────────────── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(249,204,74,0.25); border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(249,204,74,0.45); }
+
+/* ────────────────────────────────
+   PAGE TRANSITION
+──────────────────────────────── */
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+main { animation: pageIn 0.35s ease-out; }
+
+/* ────────────────────────────────
+   GLOW EFFECTS
+──────────────────────────────── */
+.glow-gold {
+  box-shadow: 0 0 30px rgba(249, 204, 74, 0.15);
+}
+
+.glow-gold-sm {
+  box-shadow: 0 0 12px rgba(249, 204, 74, 0.20);
+}
+
+/* ────────────────────────────────
+   MARQUEE (kept in case needed)
+──────────────────────────────── */
+.marquee-wrapper {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+  mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+}
+.marquee-track {
+  display: flex;
+  gap: 1rem;
+  width: max-content;
+  animation: marquee 30s linear infinite;
+}
+.marquee-track:hover { animation-play-state: paused; }
+
+@keyframes marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
