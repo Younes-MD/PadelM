@@ -2,7 +2,7 @@ import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { racketSchema } from "@/lib/validators";
 import { apiSuccess, apiError } from "@/lib/api-helpers";
-
+export const dynamic = "force-dynamic";
 // GET all rackets (admin view includes sold)
 export async function GET() {
   try {
