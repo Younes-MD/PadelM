@@ -1,176 +1,173 @@
-import { prisma } from "@/lib/prisma";
+"use client";
+
+import { useState, useEffect } from "react";
 import { CONDITIONS } from "@/lib/validators";
-import RacketCard from "@/components/RacketCard";
-import type { Metadata } from "next";
+import ImageUpload from "@/components/ImageUpload";
+import { useLang } from "@/context/LangContext";
 
-export const metadata: Metadata = {
-  title: "Browse Rackets",
-  description:
-    "Browse our collection of quality pre-owned padel rackets. Filter by brand, condition, and price.",
-};
+export default function SellPage() {
+  const { t } = useLang();
+  const [images, setImages] = useState<string[]>([]);
+  const [brands, setBrands] = useState<string[]>([]);
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [errorMsg, setErrorMsg] = useState("");
 
-export const revalidate = 30;
+  useEffect(() => {
+    fetch("/api/brands")
+      .then((res) => res.json())
+      .then((data) => setBrands(data.data || []))
+      .catch(() => setBrands([]));
+  }, []);
 
-const FALLBACK_BRANDS = ["Adidas", "Babolat", "Bullpadel", "Head", "Nox", "StarVie", "Varlion", "Wilson"];
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setStatus("loading");
+    setErrorMsg("");
 
-interface SearchParams {
-  q?: string;
-  brand?: string;
-  condition?: string;
-  minPrice?: string;
-  maxPrice?: string;
-  sort?: string;
-}
+    const form = new FormData(e.currentTarget);
+    const data = {
+      name: form.get("name") as string,
+      email: form.get("email") as string,
+      phone: (form.get("phone") as string) || undefined,
+      brand: form.get("brand") as string,
+      model: form.get("model") as string,
+      condition: form.get("condition") as string,
+      askingPrice: form.get("askingPrice")
+        ? parseFloat(form.get("askingPrice") as string)
+        : undefined,
+      description: form.get("description") as string,
+      images,
+    };
 
-async function getRackets(params: SearchParams) {
-  const where: any = {};
+    try {
+      const res = await fetch("/api/submissions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
 
-  if (params.q) {
-    where.OR = [
-      { title: { contains: params.q, mode: "insensitive" } },
-      { brand: { contains: params.q, mode: "insensitive" } },
-      { model: { contains: params.q, mode: "insensitive" } },
-      { description: { contains: params.q, mode: "insensitive" } },
-    ];
+      if (!res.ok) {
+        const json = await res.json();
+        throw new Error(json.error || "Submission failed");
+      }
+
+      setStatus("success");
+    } catch (err: any) {
+      setStatus("error");
+      setErrorMsg(err.message);
+    }
   }
 
-  if (params.brand && params.brand !== "all") {
-    where.brand = params.brand;
+  if (status === "success") {
+    return (
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 py-16 md:py-24 text-center">
+        <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
+          <svg className="w-8 h-8 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <h1 className="section-title mb-4">{t.sell.successTitle}</h1>
+        <p className="text-surface-600 text-lg mb-8">{t.sell.successMsg}</p>
+        <a href="/rackets" className="btn-primary">{t.sell.browseRackets}</a>
+      </div>
+    );
   }
-
-  if (params.condition && params.condition !== "all") {
-    where.condition = params.condition;
-  }
-
-  if (params.minPrice) {
-    where.price = { ...where.price, gte: parseFloat(params.minPrice) };
-  }
-  if (params.maxPrice) {
-    where.price = { ...where.price, lte: parseFloat(params.maxPrice) };
-  }
-
-  const orderBy: any =
-    params.sort === "price_asc"
-      ? { price: "asc" }
-      : params.sort === "price_desc"
-        ? { price: "desc" }
-        : { createdAt: "desc" };
-
-  return prisma.racket.findMany({ where, orderBy });
-}
-
-async function getBrands(): Promise<string[]> {
-  try {
-    const brands = await prisma.brand.findMany({
-      where: { active: true },
-      orderBy: { name: "asc" },
-      select: { name: true },
-    });
-    return brands.length ? brands.map((b) => b.name) : FALLBACK_BRANDS;
-  } catch {
-    return FALLBACK_BRANDS;
-  }
-}
-
-export default async function RacketsPage({
-  searchParams,
-}: {
-  searchParams: SearchParams;
-}) {
-  const params = await searchParams;
-  const [rackets, brands] = await Promise.all([getRackets(params), getBrands()]);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10 md:py-16">
+    <div className="max-w-2xl mx-auto px-4 sm:px-6 py-10 md:py-16">
       <div className="mb-10">
-        <h1 className="section-title mb-2">Browse Rackets</h1>
-        <p className="text-surface-500">
-          {rackets.length} racket{rackets.length !== 1 ? "s" : ""} available
-        </p>
+        <h1 className="section-title mb-2">{t.sell.title}</h1>
+        <p className="text-surface-500">{t.sell.subtitle}</p>
       </div>
 
-      {/* Filters */}
-      <form className="mb-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
-          {/* Search */}
-          <div className="lg:col-span-2">
-            <input
-              type="text"
-              name="q"
-              defaultValue={params.q}
-              placeholder="Search rackets..."
-              className="input-field"
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Contact info */}
+        <fieldset className="space-y-4">
+          <legend className="font-semibold text-surface-900 text-lg mb-2">{t.sell.yourInfo}</legend>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-surface-700 mb-1">{t.sell.name} *</label>
+              <input name="name" required className="input-field" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-surface-700 mb-1">{t.sell.email} *</label>
+              <input name="email" type="email" required className="input-field" />
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-surface-700 mb-1">{t.sell.phoneOptional}</label>
+            <input name="phone" type="tel" className="input-field" />
+          </div>
+        </fieldset>
+
+        {/* Racket info */}
+        <fieldset className="space-y-4">
+          <legend className="font-semibold text-surface-900 text-lg mb-2">{t.sell.racketDetails}</legend>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-surface-700 mb-1">{t.sell.brand} *</label>
+              <select name="brand" required className="input-field">
+                <option value="">{t.sell.selectBrand}</option>
+                {brands.map((b) => (
+                  <option key={b} value={b}>{b}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-surface-700 mb-1">{t.sell.model} *</label>
+              <input name="model" required className="input-field" placeholder={t.sell.modelPlaceholder} />
+            </div>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-surface-700 mb-1">{t.sell.condition} *</label>
+              <select name="condition" required className="input-field">
+                <option value="">{t.sell.selectCondition}</option>
+                {Object.entries(CONDITIONS).map(([k]) => (
+                  <option key={k} value={k}>
+                    {t.conditions[k as keyof typeof t.conditions]}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-surface-700 mb-1">{t.sell.askingPrice}</label>
+              <input name="askingPrice" type="number" min="0" step="1" className="input-field" placeholder={t.sell.optional} />
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-surface-700 mb-1">{t.sell.description} *</label>
+            <textarea
+              name="description"
+              required
+              rows={4}
+              className="input-field resize-none"
+              placeholder={t.sell.descriptionPlaceholder}
             />
           </div>
+        </fieldset>
 
-          {/* Brand */}
-          <select name="brand" defaultValue={params.brand || "all"} className="input-field">
-            <option value="all">All Brands</option>
-            {brands.map((b) => (
-              <option key={b} value={b}>
-                {b}
-              </option>
-            ))}
-          </select>
+        {/* Images */}
+        <fieldset>
+          <legend className="font-semibold text-surface-900 text-lg mb-3">{t.sell.photos}</legend>
+          <ImageUpload images={images} onChange={setImages} maxImages={5} />
+          <p className="text-xs text-surface-400 mt-2">{t.sell.photosHint}</p>
+        </fieldset>
 
-          {/* Condition */}
-          <select
-            name="condition"
-            defaultValue={params.condition || "all"}
-            className="input-field"
-          >
-            <option value="all">All Conditions</option>
-            {Object.entries(CONDITIONS).map(([k, v]) => (
-              <option key={k} value={k}>
-                {v}
-              </option>
-            ))}
-          </select>
+        {status === "error" && (
+          <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+            {errorMsg}
+          </div>
+        )}
 
-          {/* Sort */}
-          <select name="sort" defaultValue={params.sort || "newest"} className="input-field">
-            <option value="newest">Newest First</option>
-            <option value="price_asc">Price: Low → High</option>
-            <option value="price_desc">Price: High → Low</option>
-          </select>
-
-          {/* Submit */}
-          <button type="submit" className="btn-primary">
-            Filter
-          </button>
-        </div>
+        <button
+          type="submit"
+          disabled={status === "loading"}
+          className="btn-primary w-full py-4 text-base"
+        >
+          {status === "loading" ? t.sell.submitting : t.sell.submit}
+        </button>
       </form>
-
-      {/* Results */}
-      {rackets.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {rackets.map((racket) => (
-            <RacketCard key={racket.id} {...racket} />
-          ))}
-        </div>
-      ) : (
-        <div className="text-center py-20">
-          <svg
-            className="w-16 h-16 mx-auto text-surface-300 mb-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={1}
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
-          <h3 className="text-lg font-semibold text-surface-700 mb-2">
-            No rackets found
-          </h3>
-          <p className="text-surface-500">
-            Try adjusting your filters or search terms.
-          </p>
-        </div>
-      )}
     </div>
   );
 }
