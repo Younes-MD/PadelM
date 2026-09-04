@@ -46,7 +46,7 @@ export default function Header() {
 
           <Link href="/" className="flex items-center">
             <span className="font-display text-xl text-white">
-              Padel Ocaz
+               Padel<span className="text-gold-400">Ocaz</span>
             </span>
           </Link>
 
