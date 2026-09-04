@@ -5,9 +5,9 @@ import { LanguageProvider } from "@/context/LangContext";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: { default: "PadelMarket — Raquettes de Padel d'Occasion", template: "%s | PadelMarket" },
+  title: { default: "Padel Ocaz — Raquettes de Padel d'Occasion", template: "%s | Padel Ocaz" },
   description: "Votre marketplace de confiance pour les raquettes de padel d'occasion au Maroc.",
-  openGraph: { title: "PadelMarket", description: "Raquettes de padel d'occasion.", type: "website", locale: "fr_MA", siteName: "PadelMarket" },
+  openGraph: { title: "Padel Ocaz", description: "Raquettes de padel d'occasion.", type: "website", locale: "fr_MA", siteName: "Padel Ocaz" },
   robots: { index: true, follow: true },
 };
 
