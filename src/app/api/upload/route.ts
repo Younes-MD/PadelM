@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
     if (!file) return apiError("No file provided");
 
     // Validate file type
-    const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/avif"];
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/avif", "image/heic", "image/heif"];
     if (!allowedTypes.includes(file.type)) {
       return apiError("Only JPEG, PNG, WebP, and AVIF images are allowed");
     }
