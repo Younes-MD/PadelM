@@ -6,14 +6,8 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 md:py-16">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-12">
           <div className="md:col-span-2">
-            <Link href="/" className="inline-flex items-center gap-2.5 mb-4">
-              <div className="w-8 h-8 bg-gold-500 rounded-lg flex items-center justify-center">
-                <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 text-court-950" stroke="currentColor" strokeWidth={2.5}>
-                  <ellipse cx="12" cy="12" rx="5" ry="8" />
-                  <line x1="12" y1="4" x2="12" y2="20" />
-                </svg>
-              </div>
-              <span className="font-display text-lg text-white">Padel<span className="text-gold-400">Market</span></span>
+            <Link href="/" className="inline-flex items-center mb-4">
+              <span className="font-display text-lg text-white">Padel Ocaz</span>
             </Link>
             <p className="text-sm leading-relaxed max-w-md text-white/40">
               Votre marketplace de confiance pour les raquettes de padel d'occasion. Achetez et vendez en toute confiance au Maroc.
@@ -40,7 +34,7 @@ export default function Footer() {
           </div>
         </div>
         <div className="accent-line my-8" />
-        <p className="text-center text-xs text-white/20">© {new Date().getFullYear()} PadelMarket. Tous droits réservés.</p>
+        <p className="text-center text-xs text-white/20">© {new Date().getFullYear()} Padel Ocaz. Tous droits réservés.</p>
         {/* Admin hidden — press Ctrl+Shift+A */}
       </div>
     </footer>
