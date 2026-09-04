@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { Suspense } from "react";
+import { useLang } from "@/context/LangContext";
 
 function ContactForm() {
+  const { t } = useLang();
   const searchParams = useSearchParams();
   const racketId = searchParams.get("racket") || "";
   const racketTitle = searchParams.get("title") || "";
@@ -53,11 +54,9 @@ function ContactForm() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <h1 className="section-title mb-4">Message Sent!</h1>
-        <p className="text-surface-600 text-lg mb-8">
-          We&apos;ll get back to you as soon as possible.
-        </p>
-        <a href="/rackets" className="btn-primary">Browse More Rackets</a>
+        <h1 className="section-title mb-4">{t.contact.successTitle}</h1>
+        <p className="text-surface-600 text-lg mb-8">{t.contact.successMsg}</p>
+        <a href="/rackets" className="btn-primary">{t.contact.browseMore}</a>
       </div>
     );
   }
@@ -65,43 +64,37 @@ function ContactForm() {
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 py-10 md:py-16">
       <div className="mb-10">
-        <h1 className="section-title mb-2">Contact Us</h1>
+        <h1 className="section-title mb-2">{t.contact.title}</h1>
         <p className="text-surface-500">
-          {racketTitle
-            ? `Interested in the ${racketTitle}? Send us a message.`
-            : "Have a question? We'd love to hear from you."}
+          {racketTitle ? t.contact.subtitleRacket(racketTitle) : t.contact.subtitleDefault}
         </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-5">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-surface-700 mb-1">Name *</label>
+            <label className="block text-sm font-medium text-surface-700 mb-1">{t.contact.name} *</label>
             <input name="name" required className="input-field" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-surface-700 mb-1">Email *</label>
+            <label className="block text-sm font-medium text-surface-700 mb-1">{t.contact.email} *</label>
             <input name="email" type="email" required className="input-field" />
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-surface-700 mb-1">Phone (optional)</label>
+          <label className="block text-sm font-medium text-surface-700 mb-1">{t.contact.phoneOptional}</label>
           <input name="phone" type="tel" className="input-field" />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-surface-700 mb-1">Message *</label>
+          <label className="block text-sm font-medium text-surface-700 mb-1">{t.contact.message} *</label>
           <textarea
             name="message"
             required
             rows={5}
             className="input-field resize-none"
-            defaultValue={
-              racketTitle
-                ? `Hi, I'm interested in the ${racketTitle}. Is it still available?`
-                : ""
-            }
+            defaultValue={racketTitle ? t.contact.messagePlaceholder(racketTitle) : ""}
           />
         </div>
 
@@ -116,20 +109,20 @@ function ContactForm() {
           disabled={status === "loading"}
           className="btn-primary w-full py-4 text-base"
         >
-          {status === "loading" ? "Sending..." : "Send Message"}
+          {status === "loading" ? t.contact.sending : t.contact.send}
         </button>
       </form>
 
       {/* Alternative contact */}
       <div className="mt-12 p-6 bg-surface-50 rounded-xl text-center">
-        <p className="text-surface-600 mb-3">Prefer to chat directly?</p>
+        <p className="text-surface-600 mb-3">{t.contact.preferChat}</p>
         <a
           href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP || ""}`}
           target="_blank"
           rel="noopener noreferrer"
           className="btn-primary inline-flex"
         >
-          Message us on WhatsApp
+          {t.contact.whatsappCta}
         </a>
       </div>
     </div>
@@ -137,8 +130,9 @@ function ContactForm() {
 }
 
 export default function ContactPage() {
+  const { t } = useLang();
   return (
-    <Suspense fallback={<div className="max-w-2xl mx-auto px-4 py-16 text-center text-surface-400">Loading...</div>}>
+    <Suspense fallback={<div className="max-w-2xl mx-auto px-4 py-16 text-center text-surface-400">{t.contact.loading}</div>}>
       <ContactForm />
     </Suspense>
   );
