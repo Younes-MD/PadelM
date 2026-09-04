@@ -45,18 +45,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
         {/* Logo */}
         <div className="p-5 border-b border-white/8">
-          <Link href="/admin" className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-gold-500 rounded-xl flex items-center justify-center shadow-lg shadow-gold-500/25">
-              <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 text-[#0f1117]" stroke="currentColor" strokeWidth={2.5}>
-                <ellipse cx="12" cy="12" rx="5" ry="8" />
-                <line x1="12" y1="4" x2="12" y2="20" />
-                <line x1="7.5" y1="8" x2="16.5" y2="8" />
-                <line x1="7.5" y1="16" x2="16.5" y2="16" />
-              </svg>
-            </div>
+          <Link href="/admin" className="flex items-center">
             <div>
               <p className="font-display text-base text-white leading-none">
-                Padel<span className="text-gold-400">Market</span>
+                Padel Ocaz
               </p>
               <p className="text-xs text-white/25 mt-0.5">Administration</p>
             </div>
@@ -107,7 +99,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         {/* Mobile header */}
         <header className="md:hidden border-b border-white/8 px-4 py-3 flex items-center justify-between" style={{ background: "#13151c" }}>
           <span className="font-display text-lg text-white">
-            Padel<span className="text-gold-400">Market</span>
+            Padel Ocaz
           </span>
           <div className="flex items-center gap-1">
             {ADMIN_NAV.map((item) => (
