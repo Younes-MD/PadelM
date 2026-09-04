@@ -1,166 +1,176 @@
-"use client";
-
-import { useState } from "react";
-import { BRANDS, CONDITIONS } from "@/lib/validators";
-import ImageUpload from "@/components/ImageUpload";
+import { prisma } from "@/lib/prisma";
+import { CONDITIONS } from "@/lib/validators";
+import RacketCard from "@/components/RacketCard";
 import type { Metadata } from "next";
 
-export default function SellPage() {
-  const [images, setImages] = useState<string[]>([]);
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
-  const [errorMsg, setErrorMsg] = useState("");
+export const metadata: Metadata = {
+  title: "Browse Rackets",
+  description:
+    "Browse our collection of quality pre-owned padel rackets. Filter by brand, condition, and price.",
+};
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setStatus("loading");
-    setErrorMsg("");
+export const revalidate = 30;
 
-    const form = new FormData(e.currentTarget);
-    const data = {
-      name: form.get("name") as string,
-      email: form.get("email") as string,
-      phone: (form.get("phone") as string) || undefined,
-      brand: form.get("brand") as string,
-      model: form.get("model") as string,
-      condition: form.get("condition") as string,
-      askingPrice: form.get("askingPrice")
-        ? parseFloat(form.get("askingPrice") as string)
-        : undefined,
-      description: form.get("description") as string,
-      images,
-    };
+const FALLBACK_BRANDS = ["Adidas", "Babolat", "Bullpadel", "Head", "Nox", "StarVie", "Varlion", "Wilson"];
 
-    try {
-      const res = await fetch("/api/submissions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
+interface SearchParams {
+  q?: string;
+  brand?: string;
+  condition?: string;
+  minPrice?: string;
+  maxPrice?: string;
+  sort?: string;
+}
 
-      if (!res.ok) {
-        const json = await res.json();
-        throw new Error(json.error || "Submission failed");
-      }
+async function getRackets(params: SearchParams) {
+  const where: any = {};
 
-      setStatus("success");
-    } catch (err: any) {
-      setStatus("error");
-      setErrorMsg(err.message);
-    }
+  if (params.q) {
+    where.OR = [
+      { title: { contains: params.q, mode: "insensitive" } },
+      { brand: { contains: params.q, mode: "insensitive" } },
+      { model: { contains: params.q, mode: "insensitive" } },
+      { description: { contains: params.q, mode: "insensitive" } },
+    ];
   }
 
-  if (status === "success") {
-    return (
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 py-16 md:py-24 text-center">
-        <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
-          <svg className="w-8 h-8 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
-        </div>
-        <h1 className="section-title mb-4">Racket Submitted!</h1>
-        <p className="text-surface-600 text-lg mb-8">
-          Thanks for your submission. We&apos;ll review it and get back to you within 24 hours.
-        </p>
-        <a href="/rackets" className="btn-primary">Browse Rackets</a>
-      </div>
-    );
+  if (params.brand && params.brand !== "all") {
+    where.brand = params.brand;
   }
+
+  if (params.condition && params.condition !== "all") {
+    where.condition = params.condition;
+  }
+
+  if (params.minPrice) {
+    where.price = { ...where.price, gte: parseFloat(params.minPrice) };
+  }
+  if (params.maxPrice) {
+    where.price = { ...where.price, lte: parseFloat(params.maxPrice) };
+  }
+
+  const orderBy: any =
+    params.sort === "price_asc"
+      ? { price: "asc" }
+      : params.sort === "price_desc"
+        ? { price: "desc" }
+        : { createdAt: "desc" };
+
+  return prisma.racket.findMany({ where, orderBy });
+}
+
+async function getBrands(): Promise<string[]> {
+  try {
+    const brands = await prisma.brand.findMany({
+      where: { active: true },
+      orderBy: { name: "asc" },
+      select: { name: true },
+    });
+    return brands.length ? brands.map((b) => b.name) : FALLBACK_BRANDS;
+  } catch {
+    return FALLBACK_BRANDS;
+  }
+}
+
+export default async function RacketsPage({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) {
+  const params = await searchParams;
+  const [rackets, brands] = await Promise.all([getRackets(params), getBrands()]);
 
   return (
-    <div className="max-w-2xl mx-auto px-4 sm:px-6 py-10 md:py-16">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10 md:py-16">
       <div className="mb-10">
-        <h1 className="section-title mb-2">Sell Your Racket</h1>
+        <h1 className="section-title mb-2">Browse Rackets</h1>
         <p className="text-surface-500">
-          Fill in the details below and we&apos;ll review your submission. Listing is completely free.
+          {rackets.length} racket{rackets.length !== 1 ? "s" : ""} available
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Contact info */}
-        <fieldset className="space-y-4">
-          <legend className="font-semibold text-surface-900 text-lg mb-2">Your Information</legend>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-surface-700 mb-1">Name *</label>
-              <input name="name" required className="input-field" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-surface-700 mb-1">Email *</label>
-              <input name="email" type="email" required className="input-field" />
-            </div>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-surface-700 mb-1">Phone (optional)</label>
-            <input name="phone" type="tel" className="input-field" />
-          </div>
-        </fieldset>
-
-        {/* Racket info */}
-        <fieldset className="space-y-4">
-          <legend className="font-semibold text-surface-900 text-lg mb-2">Racket Details</legend>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-surface-700 mb-1">Brand *</label>
-              <select name="brand" required className="input-field">
-                <option value="">Select brand</option>
-                {BRANDS.map((b) => (
-                  <option key={b} value={b}>{b}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-surface-700 mb-1">Model *</label>
-              <input name="model" required className="input-field" placeholder="e.g. Hack 03" />
-            </div>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-surface-700 mb-1">Condition *</label>
-              <select name="condition" required className="input-field">
-                <option value="">Select condition</option>
-                {Object.entries(CONDITIONS).map(([k, v]) => (
-                  <option key={k} value={k}>{v}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-surface-700 mb-1">Asking Price (€)</label>
-              <input name="askingPrice" type="number" min="0" step="1" className="input-field" placeholder="Optional" />
-            </div>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-surface-700 mb-1">Description *</label>
-            <textarea
-              name="description"
-              required
-              rows={4}
-              className="input-field resize-none"
-              placeholder="Describe the racket's condition, how long you've used it, any notable features..."
+      {/* Filters */}
+      <form className="mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
+          {/* Search */}
+          <div className="lg:col-span-2">
+            <input
+              type="text"
+              name="q"
+              defaultValue={params.q}
+              placeholder="Search rackets..."
+              className="input-field"
             />
           </div>
-        </fieldset>
 
-        {/* Images */}
-        <fieldset>
-          <legend className="font-semibold text-surface-900 text-lg mb-3">Photos</legend>
-          <ImageUpload images={images} onChange={setImages} maxImages={5} />
-          <p className="text-xs text-surface-400 mt-2">Upload up to 5 photos. Clear, well-lit photos help sell faster.</p>
-        </fieldset>
+          {/* Brand */}
+          <select name="brand" defaultValue={params.brand || "all"} className="input-field">
+            <option value="all">All Brands</option>
+            {brands.map((b) => (
+              <option key={b} value={b}>
+                {b}
+              </option>
+            ))}
+          </select>
 
-        {status === "error" && (
-          <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-            {errorMsg}
-          </div>
-        )}
+          {/* Condition */}
+          <select
+            name="condition"
+            defaultValue={params.condition || "all"}
+            className="input-field"
+          >
+            <option value="all">All Conditions</option>
+            {Object.entries(CONDITIONS).map(([k, v]) => (
+              <option key={k} value={k}>
+                {v}
+              </option>
+            ))}
+          </select>
 
-        <button
-          type="submit"
-          disabled={status === "loading"}
-          className="btn-primary w-full py-4 text-base"
-        >
-          {status === "loading" ? "Submitting..." : "Submit Racket"}
-        </button>
+          {/* Sort */}
+          <select name="sort" defaultValue={params.sort || "newest"} className="input-field">
+            <option value="newest">Newest First</option>
+            <option value="price_asc">Price: Low → High</option>
+            <option value="price_desc">Price: High → Low</option>
+          </select>
+
+          {/* Submit */}
+          <button type="submit" className="btn-primary">
+            Filter
+          </button>
+        </div>
       </form>
+
+      {/* Results */}
+      {rackets.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {rackets.map((racket) => (
+            <RacketCard key={racket.id} {...racket} />
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-20">
+          <svg
+            className="w-16 h-16 mx-auto text-surface-300 mb-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1}
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
+          </svg>
+          <h3 className="text-lg font-semibold text-surface-700 mb-2">
+            No rackets found
+          </h3>
+          <p className="text-surface-500">
+            Try adjusting your filters or search terms.
+          </p>
+        </div>
+      )}
     </div>
   );
 }
