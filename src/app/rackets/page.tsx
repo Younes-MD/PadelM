@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { BRANDS, CONDITIONS } from "@/lib/validators";
+import { CONDITIONS } from "@/lib/validators";
 import RacketCard from "@/components/RacketCard";
 import type { Metadata } from "next";
 
@@ -10,6 +10,8 @@ export const metadata: Metadata = {
 };
 
 export const revalidate = 30;
+
+const FALLBACK_BRANDS = ["Adidas", "Babolat", "Bullpadel", "Head", "Nox", "StarVie", "Varlion", "Wilson"];
 
 interface SearchParams {
   q?: string;
@@ -57,13 +59,26 @@ async function getRackets(params: SearchParams) {
   return prisma.racket.findMany({ where, orderBy });
 }
 
+async function getBrands(): Promise<string[]> {
+  try {
+    const brands = await prisma.brand.findMany({
+      where: { active: true },
+      orderBy: { name: "asc" },
+      select: { name: true },
+    });
+    return brands.length ? brands.map((b) => b.name) : FALLBACK_BRANDS;
+  } catch {
+    return FALLBACK_BRANDS;
+  }
+}
+
 export default async function RacketsPage({
   searchParams,
 }: {
   searchParams: SearchParams;
 }) {
   const params = await searchParams;
-  const rackets = await getRackets(params);
+  const [rackets, brands] = await Promise.all([getRackets(params), getBrands()]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10 md:py-16">
@@ -91,7 +106,7 @@ export default async function RacketsPage({
           {/* Brand */}
           <select name="brand" defaultValue={params.brand || "all"} className="input-field">
             <option value="all">All Brands</option>
-            {BRANDS.map((b) => (
+            {brands.map((b) => (
               <option key={b} value={b}>
                 {b}
               </option>
