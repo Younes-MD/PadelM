@@ -105,7 +105,7 @@ export default function AdminDashboard() {
       {/* Quick actions */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
         <Link
-          href="/admin/rackets"
+          href="/YM02YT03-SECURE/rackets"
           className="bg-white border border-surface-100 rounded-xl p-5 hover:border-brand-300 transition-colors group"
         >
           <h3 className="font-semibold text-surface-900 group-hover:text-brand-600">
@@ -116,7 +116,7 @@ export default function AdminDashboard() {
           </p>
         </Link>
         <Link
-          href="/admin/submissions"
+          href="/YM02YT03-SECURE/submissions"
           className="bg-white border border-surface-100 rounded-xl p-5 hover:border-brand-300 transition-colors group"
         >
           <h3 className="font-semibold text-surface-900 group-hover:text-brand-600">

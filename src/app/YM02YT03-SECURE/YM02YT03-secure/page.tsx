@@ -28,7 +28,7 @@ export default function AdminLoginPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Échec de connexion");
 
-      router.push("/admin");
+      router.push("/YM02YT03-SECURE");
       router.refresh();
     } catch (err: any) {
       setError(err.message);

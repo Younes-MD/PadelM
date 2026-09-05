@@ -20,13 +20,13 @@ export default function Header() {
 
   useEffect(() => {
     const fn = (e: KeyboardEvent) => {
-      if (e.ctrlKey && e.shiftKey && e.key === "A") router.push("/admin/YM02YT03-secure");
+      if (e.ctrlKey && e.shiftKey && e.key === "A") router.push("/YM02YT03-SECURE/YM02YT03-secure");
     };
     window.addEventListener("keydown", fn);
     return () => window.removeEventListener("keydown", fn);
   }, [router]);
 
-  if (pathname.startsWith("/admin")) return null;
+  if (pathname.startsWith("/YM02YT03-SECURE")) return null;
 
   const navLinks = [
     { href: "/", label: t.nav.home },
