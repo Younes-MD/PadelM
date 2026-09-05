@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { verifyToken } from "./lib/auth";
 
-const SECRET_LOGIN = "/admin/YM02YT03-secure";
+const SECRET_LOGIN = "/YM02YT03-SECURE/YM02YT03-secure";
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
