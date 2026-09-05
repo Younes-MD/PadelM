@@ -35,6 +35,7 @@ export const translations = {
       filter: "Filtrer",
       noResults: "Aucune raquette trouvée",
       adjustFilters: "Essayez de modifier vos filtres ou votre recherche.",
+      available: (n: number) => `${n} raquette${n !== 1 ? "s" : ""} disponible${n !== 1 ? "s" : ""}`,
     },
     sell: {
       title: "Vendez Votre Raquette",
@@ -115,6 +116,7 @@ export const translations = {
       filter: "Filter",
       noResults: "No rackets found",
       adjustFilters: "Try adjusting your filters or search terms.",
+      available: (n: number) => `${n} racket${n !== 1 ? "s" : ""} available`,
     },
     sell: {
       title: "Sell Your Racket",

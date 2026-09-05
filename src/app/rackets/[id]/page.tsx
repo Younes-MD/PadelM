@@ -31,7 +31,7 @@ export default async function RacketDetailPage({ params }: Props) {
 
   const conditionLabel = CONDITIONS_FR[racket.condition] || racket.condition;
   const shapeLabel = racket.shape ? (SHAPES_FR[racket.shape] || racket.shape) : null;
-  const whatsappMsg = encodeURIComponent(`Bonjour! Je suis intéressé par ${racket.title} à ${racket.price.toLocaleString("fr-MA")} MAD sur PadelMarket.`);
+  const whatsappMsg = encodeURIComponent(`Bonjour! Je suis intéressé par ${racket.title} à ${racket.price.toLocaleString("fr-MA")} MAD sur Padel Ocaz.`);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 md:py-16">
