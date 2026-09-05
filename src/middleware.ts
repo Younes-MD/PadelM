@@ -7,7 +7,7 @@ const SECRET_LOGIN = "/YM02YT03-SECURE/YM02YT03-secure";
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  if (pathname.startsWith("/admin") && !pathname.startsWith(SECRET_LOGIN)) {
+  if (pathname.startsWith("/BDEL") && !pathname.startsWith(SECRET_LOGIN)) {
     const token = request.cookies.get("admin_token")?.value;
     if (!token) return NextResponse.redirect(new URL(SECRET_LOGIN, request.url));
     const session = await verifyToken(token);
